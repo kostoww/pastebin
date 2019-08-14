@@ -6,6 +6,8 @@ import org.hibernate.type.UUIDCharType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,16 +26,26 @@ public class Paste {
     private String details;
     private String ip;
     private LocalDateTime uploaded;
-    private String attachment;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "paste_id")
+    private List<Attachment> attachments;
 
     public Paste() {
     }
 
-    public Paste(String text, String ip, LocalDateTime uploaded, String attachment) {
+    public Paste(String text, String ip, LocalDateTime uploaded) {
+        this(text, ip, uploaded, new ArrayList<>());
+    }
+
+    public Paste(String text, String ip, LocalDateTime uploaded, List<Attachment> attachments) {
         this.details = text;
         this.ip = ip;
         this.uploaded = uploaded;
-        this.attachment = attachment;
+        this.attachments = attachments;
         this.key = UUID.randomUUID();
     }
 
@@ -47,12 +59,12 @@ public class Paste {
                 Objects.equals(details, paste.details) &&
                 Objects.equals(ip, paste.ip) &&
                 Objects.equals(uploaded, paste.uploaded) &&
-                Objects.equals(attachment, paste.attachment);
+                Objects.equals(attachments, paste.attachments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, details, ip, uploaded, attachment);
+        return Objects.hash(id, key, details, ip, uploaded, attachments);
     }
 
     @Override
@@ -63,7 +75,7 @@ public class Paste {
                 ", text='" + details + '\'' +
                 ", ip='" + ip + '\'' +
                 ", uploaded=" + uploaded +
-                ", attachment='" + attachment + '\'' +
+                ", attachment='" + attachments + '\'' +
                 '}';
     }
 
@@ -107,11 +119,11 @@ public class Paste {
         this.uploaded = uploaded;
     }
 
-    public String getAttachment() {
-        return attachment;
+    public List<Attachment> getAttachment() {
+        return attachments;
     }
 
-    public void setAttachment(String attachment) {
-        this.attachment = attachment;
+    public void setAttachment(List<Attachment> attachment) {
+        this.attachments = attachment;
     }
 }

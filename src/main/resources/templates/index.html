@@ -34,17 +34,14 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <li class="nav-item">
+                <a class="nav-link" href="/all">All</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">My uploads</a>
+                <a class="nav-link" href="/my">My uploads</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Curl</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">API</a>
+                <a class="nav-link" href="/curl">Curl</a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
@@ -56,61 +53,50 @@
 <div class="container">
     <div style="margin-top: 20px;">&nbsp;
         <div th:if="${uploaded}" class="alert alert-info" role="alert">
-            Your snipped is uploaded, check it on <a href="#"><span th:text="${url}"></span></a>
+            Your snipped is uploaded, check it on <a th:href="${url}"><span th:text="${url}"></span></a>
         </div>
     </div>
-    <form action="#" th:action="@{/submit}" th:object="${pasteDTO}" method="post">
+
         <div class="row ">
             <div class="col-lg-6">
                 <h1 class="display-5 text-center">History</h1><br/>
                 <ul class="list-group mb-3">
                     <li th:each="snippet : ${history}" class="list-group-item d-flex justify-content-between lh-condensed">
                         <div>
-                            <h6 class="my-0"><a th:href="${'http://localhost:8080/'+snippet.getKey()}" th:text="${snippet.getKey()}"></a></h6>
-                            <small class="text-muted"> Uploaded by <b th:text="${snippet.getIp()}">--ip--</b></small>
+                            <h6 class="my-0"><a class="link" th:href="${'http://localhost:8080/'+snippet.getKey()}" th:text="${snippet.getKey()}"></a></h6>
+                            <small class="text-muted">
+                                Uploaded by <a th:href="@{/by/{ip}(ip=${snippet.ip})}"><b th:text="${snippet.ip}">--ip--</b></a>
+                                <span th:if="${not #lists.isEmpty(snippet.attachment)}">contains <b th:text="${snippet.attachment.size()}"></b> file<span th:if="${snippet.attachment.size() > 1}" th:text="s"></span></span>
+                            </small>
                         </div>
                         <span class="text-muted" th:text="${#temporals.format(snippet.getUploaded(), 'dd-MM-yyyy HH:mm')}">2019-02-09 22:16:03</span>
                     </li>
-
                 </ul>
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
             <div class="col-lg-6">
                 <h1 class="display-5 text-center">Upload snippet</h1><br/>
-                <div class="form-group">
-                    <div class="custom-file">
-                        <input type="file"  th:field="*{attachment}" class="custom-file-input" id="inputGroupFile01">
-                        <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
-                    </div><br/><br/>
-                    <label for="exampleFormControlTextarea1"></label><textarea th:field="*{details}" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="#!/bin/bash"></textarea>
-                </div>
-                <div class="float-left">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input"   id="exampleCheck1">
-                        <label class="form-check-label" for="exampleCheck1">Burn after read</label>
-                    </div>
-                </div>
-                <div class="float-right">
-                    <button type="submit" class="btn btn-sag-color">Upload</button>
-                </div>
-                <div class="clearfix"></div>
+                <form action="#" enctype="multipart/form-data" th:action="@{/submit}" th:object="${pasteDTO}" method="post">
+                    <div class="form-group">
 
+                        <input class="form-control-file" type="file" name="file"  id="inputGroupFile01" multiple>
+
+                        <label for="exampleFormControlTextarea1"></label><textarea th:field="*{details}" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="#!/bin/bash"></textarea>
+                    </div>
+                    <div class="float-left">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input"   id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Burn after read</label>
+                        </div>
+                    </div>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-sag-color">Upload</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
 
             </div>
         </div>
-    </form>
+
 </div>
 </body>
 </html>
